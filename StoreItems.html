@@ -34,6 +34,44 @@
         }
       }
     </style>
+    
+  </head>
+  <body>
+    
+    <div data-role="page" data-theme="b">
+      
+      <div data-role="header">
+        <h1>gladiator Stores Near You</h1>
+        <a href="./index.html" data-role="button" data-icon="home" data-iconpos="notext">Home</a>
+      </div><!-- /header -->
+      
+      <div data-role="content">  
+        <div class="geo-coords">
+          <fieldset class="ui-grid-c">
+            <div class="ui-block-a">
+              <input id="Lat" type="text" value="47.6192">
+            </div>
+            <div class="ui-block-b">
+              <input id="Long" type="text" value="-122.13051">
+            </div>
+             <div class="ui-block-c">
+              <input id="Radius" type="text" value="0.01">
+            </div>
+             <div class="ui-block-d">
+              <input type="button" value="Go" onclick="recalc_clicked()" />
+            </div>
+          </fieldset>
+        </div>
+        <input type="button" value="Get Item" onclick="getMacysItem('12345678')" />
+        <ul data-role="listview" data-inset="true">
+          <div id="stores_list">
+            <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
+            <li><a href="./store-promos.html" data-ajax="false">Store-2</a></li>
+          </div>
+        </ul>
+      </div><!-- /content -->
+      
+    </div><!-- /page -->
     <script>
       google.load('visualization', '1', { packages: ['table', 'corechart'] });
       var gladiator_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1dln8EkCPD9IsNEpuKN71kkCJJ_l1V8l1sF7gw_YV3dM/edit?usp=sharing";
@@ -60,7 +98,7 @@
         
         function populateHeader(lat, lng){
           $('#Lat').val(lat.toPrecision(6));
-          $('#Long').val(lng.toPrecision(6));
+          $('#Long').val(lng.toPrecision(7));
           gladiatorClosestStoreCatalog(function(storeCatalog) {
             gladiatorStoreItemsData(storeCatalog, function() {
               showStoreAndItems();
@@ -68,6 +106,7 @@
           });          
         }
         
+
       });
       function showStoreAndItems(){
         var x = $('#Lat').val();
@@ -214,63 +253,50 @@
       }
       function getMacysItem(upcItem) {
         upcItem = "50946872827";
+        var restUrl = 'http://origin-api.macys.com/v3/catalog/product?upc=' + upcItem;
+        
         $.ajax({
+          url: restUrl,
           type: 'GET',
-          dataType: 'jsonp',
+          //crossOrigin: true,
+          success: function() { alert('hello!'); },
+          error: function() { alert('boo!'); },
+          beforeSend: setHeader
+        });
+
+        function setHeader(xhr) {
+          xhr.setRequestHeader('X-Macys-Webservice-Client-Id', 'Launch2015');
+          xhr.setRequestHeader('Accept', 'application/json');
+        }        
+
+/*
+        $.ajax({
+          crossOrigin: true,
+          type: 'GET',
+          url: 'http://api.macys.com/v3/catalog/product?upc=' + upcItem ,
+          beforeSend : function(xhr) {
+            xhr.setRequestHeader("X-Macys-Webservice-Client-Id", "Launch2015");
+            xhr.setRequestHeader("Accept", "application/json");
+          },
           cache: false,
-          headers: {'x-macys-webservice-client-id': 'Launch2015', 'Accept': 'application/json'},
-          beforeSend: function (request)
-          {
-              request.setRequestHeader('x-macys-webservice-client-id', 'Launch2015-2');
-          },          
-          url: 'http://api.macys.com/v3/catalog/product?upc=' + upcItem  + '&callback=true',
           success: function(data) {           
-              alert(data.product.id);                            
+              alert(JSON.stringify(data));                            
           },
           error: function(){
-              alert('Could not able to find location!');
+              alert('Could not fetch data!');
           }
         });
+        */
+      }
+      function localJsonpCallback(json) {
+        if (!json.Error) {
+          alert(JSON.stringify(json));                            
+        }
+        else {
+          alert(json.Message);
+        }
       }
     </script>
-    
-  </head>
-  <body>
-    
-    <div data-role="page" data-theme="b">
-      
-      <div data-role="header">
-        <h1>gladiator Stores Near You</h1>
-        <a href="./index.html" data-role="button" data-icon="home" data-iconpos="notext">Home</a>
-      </div><!-- /header -->
-      
-      <div data-role="content">  
-        <div class="geo-coords">
-          <fieldset class="ui-grid-c">
-            <div class="ui-block-a">
-              <input id="Lat" type="text" value="47.6192">
-            </div>
-            <div class="ui-block-b">
-              <input id="Long" type="text" value="-122.13051">
-            </div>
-             <div class="ui-block-c">
-              <input id="Radius" type="text" value="0.01">
-            </div>
-             <div class="ui-block-d">
-              <input type="button" value="Go" onclick="recalc_clicked()" />
-            </div>
-          </fieldset>
-        </div>
-        <input type="button" value="Get Item" onclick="getMacysItem('12345678')" />
-        <ul data-role="listview" data-inset="true">
-          <div id="stores_list">
-            <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
-            <li><a href="./store-promos.html" data-ajax="false">Store-2</a></li>
-          </div>
-        </ul>
-      </div><!-- /content -->
-      
-    </div><!-- /page -->
     
   </body>
 </html>                
