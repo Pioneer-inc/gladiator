@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Gladiator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--meta http-equiv="refresh" content="30"-->
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="themes/Bootstrap.css">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile.structure-1.4.0.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+
+      @media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+          float: none;
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+      }
+    </style>
+    
+  </head>
+  <body>
+    
+    <div data-role="page" data-theme="b">
+      
+      <div data-role="header">
+        <h1>Gladiator Stores Near You</h1>
+        <a href="./index.html" data-role="button" data-icon="home" data-iconpos="notext">Home</a>
+      </div><!-- /header -->
+      
+      <div data-role="content">  
+        <div class="geo-coords">
+          <fieldset class="ui-grid-c">
+            <div class="ui-block-a">
+              <input id="Lat" type="text" value="47.6951">
+            </div>
+            <div class="ui-block-b">
+              <input id="Long" type="text" value="-122.1038">
+            </div>
+             <div class="ui-block-c">
+              <input id="Radius" type="text" value="90.01">
+            </div>
+             <div class="ui-block-d">
+              <input type="button" value="Go" onclick="recalc_clicked()" />
+            </div>
+          </fieldset>
+        </div>
+        <ul data-role="listview" data-inset="true">
+          <div id="stores_list">
+            <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
+            <li><a href="./store-promos.html" data-ajax="false">Store-2</a></li>
+          </div>
+        </ul>
+        <a href="./index2.html" data-role="button" data-inline="true">Old Link</a>        
+      </div><!-- /content -->
+      
+    </div><!-- /page -->
+    
+    <script>
+      google.load('visualization', '1', { packages: ['table', 'corechart'] });
+      var gladiator_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1dln8EkCPD9IsNEpuKN71kkCJJ_l1V8l1sF7gw_YV3dM/edit?usp=sharing";
+      
+      var Geo={};
+      var store_string = "";
+      
+      $(function() {
+        
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(success, error);
+        }
+        
+        //Get the latitude and the longitude;
+        function success(position) {
+          Geo.lat = position.coords.latitude;
+          Geo.lng = position.coords.longitude;
+          populateHeader(Geo.lat, Geo.lng);
+        }
+        
+        function error(){
+          console.log("Geocoder failed");
+        }
+        
+        function populateHeader(lat, lng){
+          $('#Lat').val(lat.toPrecision(6));
+          $('#Long').val(lng.toPrecision(6));
+          gladiatorReadCustomersData(function() {
+            showStores();
+          });          
+        }
+        
+      });
+      function showStores(){
+        var x = $('#Lat').val();
+        var y = $('#Long').val();
+        var i = 0;
+        $('#stores_list').html(store_string);
+      }
+      function recalc_clicked(){
+        //alert("Recalc Clicked!");
+        gladiatorReadCustomersData(function() {
+          showStores();
+        });
+      }
+      function gladiatorReadCustomersData(callback_func) {
+        // Reference: https://developers.google.com/chart/interactive/docs/querylanguage
+        // https://developers.google.com/chart/interactive/docs/reference#dataparam
+        var x = parseFloat($('#Lat').val());
+        var y = parseFloat($('#Long').val());
+        var radius = parseFloat($('#Radius').val());
+        var i = 0;
+        
+        //alert ('x=' + x + ', y=' +y);
+        
+        var tq_query = "&tq=select * where";
+        var gvizQuery;
+        //var vendor_id = localStorage["current_vendor_id"];
+        //var item_id = localStorage["current_item_id"];
+        
+        //tq_query += " G > 47.0";
+        tq_query += " G > " + (x-radius);
+        tq_query += " and G < " + (x+radius);
+        tq_query += " and H > " + (y-radius);
+        tq_query += " and H < " + (y+radius);
+        gvizQuery = new google.visualization.Query(gladiator_customers_gsheet_url + tq_query);
+        
+        gvizQuery.send(function(response) {
+          if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+          }
+          
+          var data = response.getDataTable();
+          //and store it in local storage
+          // http://stackoverflow.com/questions/27906173/cant-seem-to-store-and-retrieve-google-charts-data-in-local-storage-using-jstor
+          // $.jStorage.set("customersData", data);
+          var count = data.getNumberOfRows();
+          var themes = ['f', 'b', 'c', 'd', 'e'];
+          var strDisplay = "";
+          if (count < 1) {
+            alert ("There are no gladiator customers in your proximity.");
+            } else {
+            store_string = "";
+            for (i=0; i < count; i++) {
+              a = data.getValue(i,0); // store id
+              b = data.getValue(i,1); // store name
+              c = data.getValue(i,6); // store lat
+              d = data.getValue(i,7); // store long
+              e = data.getValue(i,11); // store image url
+              f = data.getValue(i,12); // store catalog url
+              strDisplay += a + ', ' + b + ', ' + c + ', ' + d + ', ' + e + '\r\n';
+              // store_string += '<li><a href="./store-promos.html" data-ajax="false">' + b + ', ' + c + ', ' + d + '</a></li>';
+              //store_string += '<li><a href="./store-promos.html" data-role="button" data-theme="'+ themes[i%5] +'" data-ajax="false" data-icon="carat-r" data-iconpos="right">';
+              //store_string += b + ', ' + ((parseFloat(c)-x)*100000) + ', ' + ((parseFloat(d)-y)*100000) + '</a></li>';
+              store_string += '<li class="callbutton disabled" data-userid="' + a + '"><a href="#"><div>';
+              store_string += '<img style="width: 50px;height: 50px;float:left;margin-right: 5px; margin-left: -7px;" src="' + e + '"/>';
+              store_string += '<p style="margin: 8px 0px 0px 0px; font-weight: bold;">' + b + '<p>';
+              store_string += '<p style="color: #777; font-size: small;">' + ((parseFloat(c)-x)*100000).toPrecision(6) + ', ' + ((parseFloat(d)-y)*100000).toPrecision(6) + '<p></div></a></li>';
+            }
+            //alert (strDisplay);
+          }
+          callback_func();
+        });
+      }
+    </script>
+  </body>
+</html>                
