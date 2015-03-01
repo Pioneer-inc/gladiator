@@ -1,0 +1,14 @@
+2015-02-28 22:19:36.779 LiquidPrice[63054:2462009] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/abey/Library/Developer/CoreSimulator/Devices/B5FFD922-E8D7-4DB4-9885-57DC612061F6/data/Containers/Data/Application/C8813DB6-D2D7-43B2-8E59-66ABAF3C46DC/Library/Cookies/Cookies.binarycookies
+2015-02-28 22:19:36.849 LiquidPrice[63054:2462009] Apache Cordova native platform version 3.7.0 is starting.
+2015-02-28 22:19:36.849 LiquidPrice[63054:2462009] Multi-tasking -> Device: YES, App: YES
+2015-02-28 22:19:36.851 LiquidPrice[63054:2462009] Unlimited access to network resources
+2015-02-28 22:19:36.853 LiquidPrice[63054:2462009] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-02-28 22:19:37.143 LiquidPrice[63054:2462009] Resetting plugins due to page load.
+2015-02-28 22:19:37.682 LiquidPrice[63054:2462009] Finished load of: file:///Users/abey/Library/Developer/CoreSimulator/Devices/B5FFD922-E8D7-4DB4-9885-57DC612061F6/data/Containers/Bundle/Application/7685834E-5E4E-4D34-90C1-845F762C067F/LiquidPrice.app/www/index.html
