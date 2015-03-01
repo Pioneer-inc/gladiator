@@ -63,6 +63,7 @@
           </fieldset>
         </div>
         <input type="button" value="Get Item" onclick="getMacysItem('12345678')" />
+        <input type="button" value="Sinch SMS" onclick="sinch_sms('14046109974', '14254990334', 'Please look at these shoes and let me know if I should buy it for $34.99 in a Gladiator promotion. http://www1.macys.com/shop/product/free-people-peek-a-boo-cap-sleeve-lace-dress?ID=1734160&CategoryID=5449&cm_kws=1734160')" />
         <ul data-role="listview" data-inset="true">
           <div id="stores_list">
             <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
@@ -105,9 +106,9 @@
             });
           });          
         }
-        
-
       });
+      function sinch_sms(to_phone_number, from_phone_number, text_message) {
+      }
       function showStoreAndItems(){
         var x = $('#Lat').val();
         var y = $('#Long').val();

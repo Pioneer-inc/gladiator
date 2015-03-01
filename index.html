@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--meta http-equiv="refresh" content="30"-->
     
+    <!--link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.css" />    
+      <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>   
+    <script src="http://code.jquery.com/mobile/1.1.1/jquery.mobile-1.1.1.min.js"></script -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="themes/Bootstrap.css">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile.structure-1.4.0.min.css" />
@@ -15,61 +18,80 @@
     
     <style type="text/css">
       body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+      padding-top: 60px;
+      padding-bottom: 40px;
       }
       .sidebar-nav {
-        padding: 9px 0;
+      padding: 9px 0;
       }
-
+      
       @media (max-width: 980px) {
-        /* Enable use of floated navbar text */
-        .navbar-text.pull-right {
-          float: none;
-          padding-left: 5px;
-          padding-right: 5px;
-        }
+      /* Enable use of floated navbar text */
+      .navbar-text.pull-right {
+      float: none;
+      padding-left: 5px;
+      padding-right: 5px;
+      }
       }
     </style>
     
   </head>
   <body>
-    
-    <div data-role="page" data-theme="b">
-      
+    <div data-role="page" data-theme="b">      
       <div data-role="header">
-        <h1>Gladiator Stores Near You</h1>
-        <a href="./index.html" data-role="button" data-icon="home" data-iconpos="notext">Home</a>
+        <table width="100%">
+          <tr valign="middle">
+            <td width="30%">Hello Kathy!</td>
+            <td width="40%" align="center">Liquid Price</td>
+            <td width="30%" align="right"><img height="60" src="./images/LP-logo.png"></img></td>
+          </tr>
+        </table>
       </div><!-- /header -->
       
       <div data-role="content">  
-        <div class="geo-coords">
-          <fieldset class="ui-grid-c">
-            <div class="ui-block-a">
-              <input id="Lat" type="text" value="47.6951">
-            </div>
-            <div class="ui-block-b">
-              <input id="Long" type="text" value="-122.1038">
-            </div>
-             <div class="ui-block-c">
-              <input id="Radius" type="text" value="90.01">
-            </div>
-             <div class="ui-block-d">
-              <input type="button" value="Go" onclick="recalc_clicked()" />
-            </div>
-          </fieldset>
-        </div>
         <ul data-role="listview" data-inset="true">
           <div id="stores_list">
             <li><a href="./store-promos.html" data-ajax="false">Store-1</a></li>
             <li><a href="./store-promos.html" data-ajax="false">Store-2</a></li>
           </div>
         </ul>
-        <a href="./index2.html" data-role="button" data-inline="true">Old Link</a>        
+        
+        <fieldset class="ui-grid-c">
+          <div class="ui-block-a">
+            <a href="#" id="btnWomensShoes">Women's Shoes</a>
+          </div>
+          <div class="ui-block-b">
+            <a href="#" id="btnWomensApparel">Women's Apparel</a>
+          </div>
+          <div class="ui-block-c">
+            <a href="#" id="btnMensShoes">Men's Shoes</a>
+          </div>
+          <div class="ui-block-d">
+            <a href="#" id="btnBestBuy">Near Best Buy</a>
+          </div>
+        </fieldset>
+        
+        <div class="geo-coords">
+          <fieldset class="ui-grid-c">
+            <div class="ui-block-a">
+              <input id="Lat" type="text" value="47.6192">
+            </div>
+            <div class="ui-block-b">
+              <input id="Long" type="text" value="-122.13051">
+            </div>
+            <div class="ui-block-c">
+              <input id="Radius" type="text" value="0.01">
+            </div>
+            <div class="ui-block-d">
+              <input type="button" value="Go" onclick="recalc_clicked()" />
+            </div>
+          </fieldset>
+        </div>
+        <a href="#" onclick="getMacysItem('12345678')">Get Item</a>
+        <a href="#" onclick="sinch_sms('14046109974', '14254990334', 'Please look at these shoes and let me know if I should buy it for $34.99 in a Gladiator promotion.')">Sinch SMS</a>
       </div><!-- /content -->
       
     </div><!-- /page -->
-    
     <script>
       google.load('visualization', '1', { packages: ['table', 'corechart'] });
       var gladiator_customers_gsheet_url = "https://docs.google.com/spreadsheets/d/1dln8EkCPD9IsNEpuKN71kkCJJ_l1V8l1sF7gw_YV3dM/edit?usp=sharing";
@@ -96,14 +118,17 @@
         
         function populateHeader(lat, lng){
           $('#Lat').val(lat.toPrecision(6));
-          $('#Long').val(lng.toPrecision(6));
-          gladiatorReadCustomersData(function() {
-            showStores();
+          $('#Long').val(lng.toPrecision(7));
+          gladiatorClosestStoreCatalog(function(storeCatalog) {
+            gladiatorStoreItemsData(storeCatalog, function() {
+              showStoreAndItems();
+            });
           });          
         }
         
+        
       });
-      function showStores(){
+      function showStoreAndItems(){
         var x = $('#Lat').val();
         var y = $('#Long').val();
         var i = 0;
@@ -111,11 +136,13 @@
       }
       function recalc_clicked(){
         //alert("Recalc Clicked!");
-        gladiatorReadCustomersData(function() {
-          showStores();
+        gladiatorClosestStoreCatalog(function(storeCatalog) {
+          gladiatorStoreItemsData(storeCatalog, function() {
+            showStoreAndItems();
+          });
         });
       }
-      function gladiatorReadCustomersData(callback_func) {
+      function gladiatorClosestStoreCatalog(callback_func) {
         // Reference: https://developers.google.com/chart/interactive/docs/querylanguage
         // https://developers.google.com/chart/interactive/docs/reference#dataparam
         var x = parseFloat($('#Lat').val());
@@ -150,6 +177,10 @@
           var count = data.getNumberOfRows();
           var themes = ['f', 'b', 'c', 'd', 'e'];
           var strDisplay = "";
+          var lastMinDistance = 100000.00; // large number
+          var currentDistance = 0.0;
+          var dx, dy;
+          var closestStoreCatalog;
           if (count < 1) {
             alert ("There are no gladiator customers in your proximity.");
             } else {
@@ -162,19 +193,144 @@
               e = data.getValue(i,11); // store image url
               f = data.getValue(i,12); // store catalog url
               strDisplay += a + ', ' + b + ', ' + c + ', ' + d + ', ' + e + '\r\n';
-              // store_string += '<li><a href="./store-promos.html" data-ajax="false">' + b + ', ' + c + ', ' + d + '</a></li>';
-              //store_string += '<li><a href="./store-promos.html" data-role="button" data-theme="'+ themes[i%5] +'" data-ajax="false" data-icon="carat-r" data-iconpos="right">';
-              //store_string += b + ', ' + ((parseFloat(c)-x)*100000) + ', ' + ((parseFloat(d)-y)*100000) + '</a></li>';
+              dx = (parseFloat(c)-x);
+              dy = (parseFloat(d)-y);
+              currentDistance = dx*dx + dy*dy;
+              if (currentDistance < lastMinDistance) {
+                lastMinDistance = currentDistance;
+                closestStoreCatalog = f;
+                store_string = '<li class="callbutton disabled" data-userid="' + a + '"><a href="#"><div>';
+                store_string += '<img style="width: 50px;height: 50px;float:left;margin-right: 5px; margin-left: -7px;" src="' + e + '"/>';
+                store_string += '<p style="margin: 8px 0px 0px 0px; font-weight: bold;">' + b + '<p>';
+                store_string += '<p style="color: #777; font-size: small;">' + (Math.sqrt(currentDistance)*100000).toPrecision(6) + '<p></div></a></li>';
+              }
+            }
+            //alert (strDisplay);
+          }
+          callback_func(closestStoreCatalog);
+        });
+      }
+      function gladiatorStoreItemsData(catalogURL, callback_func) {
+        // Reference: https://developers.google.com/chart/interactive/docs/querylanguage
+        // https://developers.google.com/chart/interactive/docs/reference#dataparam
+        var x = parseFloat($('#Lat').val());
+        var y = parseFloat($('#Long').val());
+        var radius = parseFloat($('#Radius').val());
+        var i = 0;
+        
+        //alert ('x=' + x + ', y=' +y);
+        
+        var tq_query = "&tq=select * where";
+        var gvizQuery;
+        //var vendor_id = localStorage["current_vendor_id"];
+        //var item_id = localStorage["current_item_id"];
+        
+        //tq_query += " G > 47.0";
+        tq_query += " G > 0.0";
+        gvizQuery = new google.visualization.Query(catalogURL + tq_query);
+        
+        gvizQuery.send(function(response) {
+          if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+          }
+          
+          var data = response.getDataTable();
+          //and store it in local storage
+          // http://stackoverflow.com/questions/27906173/cant-seem-to-store-and-retrieve-google-charts-data-in-local-storage-using-jstor
+          // $.jStorage.set("customersData", data);
+          var count = data.getNumberOfRows();
+          var themes = ['f', 'b', 'c', 'd', 'e'];
+          var strDisplay = "";
+          var lastMinDistance = 100000.00; // large number
+          var currentDistance = 0.0;
+          var dx, dy;
+          if (count < 1) {
+            alert ("There are no gladiator items on sale for this customer.");
+            } else {
+            for (i=0; i < count; i++) {
+              a = data.getValue(i,0); // id
+              b = data.getValue(i,1); // category
+              c = data.getValue(i,2); // name
+              d = data.getValue(i,4); // item URL
+              e = data.getValue(i,5); // retail price
+              f = data.getValue(i,6); // promo price
+              strDisplay += a + ', ' + b + ', ' + c + ', ' + d + ', ' + e + '\r\n';
+              // dx = (parseFloat(c)-x);
+              // dy = (parseFloat(d)-y);
+              // currentDistance = dx*dx + dy*dy;
+              if (f == null || parseFloat(f) <= 0) continue;
+              
               store_string += '<li class="callbutton disabled" data-userid="' + a + '"><a href="#"><div>';
-              store_string += '<img style="width: 50px;height: 50px;float:left;margin-right: 5px; margin-left: -7px;" src="' + e + '"/>';
-              store_string += '<p style="margin: 8px 0px 0px 0px; font-weight: bold;">' + b + '<p>';
-              store_string += '<p style="color: #777; font-size: small;">' + ((parseFloat(c)-x)*100000).toPrecision(6) + ', ' + ((parseFloat(d)-y)*100000).toPrecision(6) + '<p></div></a></li>';
+              store_string += '<img style="width: 50px;height: 50px;float:left;margin-right: 5px; margin-left: -7px;" src="' + d + '"/>';
+              store_string += '<p style="margin: 8px 0px 0px 0px; font-weight: bold;">' + f + ' (' + e + ')<p>';
+              store_string += '<p style="color: #777; font-size: small;">' + c + '<p></div></a></li>';
             }
             //alert (strDisplay);
           }
           callback_func();
         });
       }
+      function getMacysItem(productId) {
+        productId = "1734160";
+        var restUrl = 'http://origin-api.macys.com/v4/catalog/product/' + productId + '(productdetails(price,summary,availability),promotions,reviews)?retrieveallupcs=true';
+        
+        $.ajax({
+          url: restUrl,
+          type: 'GET',
+          //crossOrigin: true,
+          success: function(data) { 
+            alert(data.product[0].productDetails.summary.name);
+            $('#productName').html(data.product[0].productDetails.summary.name);
+          },
+          error: function(error) { alert('boo!'); },
+          beforeSend: setHeader
+        });
+        
+        restUrl = 'http://origin-api.macys.com/v3/catalog/product/' + productId + '?show=image';          
+        $.ajax({
+          url: restUrl,
+          type: 'GET',
+          success: function(data) { 
+            //alert(data.product[0].image[0].imageurl);   
+            $('#imageItem').attr("src", data.product[0].image[0].imageurl);
+          },
+          error: function(error) { alert('boo!'); },
+          beforeSend: setHeader
+        });
+        function setHeader(xhr) {
+          xhr.setRequestHeader('X-Macys-Webservice-Client-Id', 'Launch2015');
+          xhr.setRequestHeader('Accept', 'application/json');
+        }        
+        
+        /*
+          $.ajax({
+          crossOrigin: true,
+          type: 'GET',
+          url: 'http://api.macys.com/v3/catalog/product?upc=' + upcItem ,
+          beforeSend : function(xhr) {
+          xhr.setRequestHeader("X-Macys-Webservice-Client-Id", "Launch2015");
+          xhr.setRequestHeader("Accept", "application/json");
+          },
+          cache: false,
+          success: function(data) {           
+          alert(JSON.stringify(data));                            
+          },
+          error: function(){
+          alert('Could not fetch data!');
+          }
+          });
+        */
+      }
+      function localJsonpCallback(json) {
+        if (!json.Error) {
+          alert(JSON.stringify(json));                            
+        }
+        else {
+          alert(json.Message);
+        }
+      }
     </script>
+    
   </body>
 </html>                
