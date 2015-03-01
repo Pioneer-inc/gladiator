@@ -59,16 +59,16 @@
         <br><br><br>
         <fieldset class="ui-grid-c">
           <div class="ui-block-a">
-            <a href="#" id="btnWomensShoes">Women's Shoes</a>
+            <a href="#" id="btnWomensShoes" onclick="setLatLongAndRecalc('37.8079','-122.4299');">Women's Shoes</a>
           </div>
           <div class="ui-block-b">
-            <a href="#" id="btnWomensApparel">Women's Apparel</a>
+            <a href="#" id="btnWomensApparel" onclick="setLatLongAndRecalc('37.8079','-122.4299');">Women's Apparel</a>
           </div>
           <div class="ui-block-c">
-            <a href="#" id="btnMensShoes">Men's Shoes</a>
+            <a href="#" id="btnMensShoes" onclick="setLatLongAndRecalc('37.8079','-122.4299');">Men's Shoes</a>
           </div>
           <div class="ui-block-d">
-            <a href="#" id="btnBestBuy">Near Best Buy</a>
+            <a href="#" id="btnBestBuy" onclick="setLatLongAndRecalc('37.8079','-122.4299');">Near Best Buy</a>
           </div>
         </fieldset>
         
@@ -84,7 +84,7 @@
               <input id="Radius" type="text" value="0.01">
             </div>
             <div class="ui-block-d">
-              <input type="button" value="Go" onclick="recalc_clicked()" />
+              <input type="button" value="Go" onclick="recalc_clicked();" />
             </div>
           </fieldset>
         </div>
@@ -188,6 +188,11 @@
           var i = 0;
           $('#stores_list').html(store_string);
         }
+        function setLatLongAndRecalc(x, y) {
+          $('#Lat').val(x);
+          $('#Long').val(y);
+          recalc_clicked();
+        }
         function recalc_clicked(){
           //alert("Recalc Clicked!");
           gladiatorClosestStoreCatalog(function(storeCatalog) {
@@ -236,6 +241,7 @@
             var dx, dy;
             var closestStoreCatalog;
             var closestStoreName;
+            var closestWelcomeMessage;
             if (count < 1) {
               alert ("There are no gladiator customers in your proximity.");
               } else {
@@ -258,6 +264,7 @@
                   lastMinDistance = currentDistance;
                   closestStoreCatalog = f;
                   closestStoreName = b + ', ' + g ;
+                  closestWelcomeMessage = welcomeMessage;
                   store_string = '<li class="callbutton disabled" data-userid="' + a + '"><a href="#"><div>';
                   store_string += '<img style="width: 50px;height: 50px;float:left;margin-right: 5px; margin-left: -7px;" src="' + e + '"/>';
                   store_string += '<p style="margin: 8px 0px 0px 0px; font-weight: bold;">' + b + '<p>';
@@ -265,7 +272,7 @@
                 }
               }
               //alert (strDisplay);
-              if (welcomeMessage != null) alert (welcomeMessage);
+              if (closestWelcomeMessage != null) alert (closestWelcomeMessage);
             }
             callback_func(closestStoreCatalog);
           });
