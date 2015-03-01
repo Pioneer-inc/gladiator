@@ -476,16 +476,6 @@
               xhr.setRequestHeader('Accept', 'application/json');
             }    
             
-            function sendSinchMessage() {
-            sinchUrl = "http://sinchsms-43618.onmodulus.net/?tophone=+14046109974&smstext=Ash, How do you like this for $34.99? http://thisdress.macys.com";          
-            $.ajax({
-              url: sinchUrl,
-              type: 'GET',
-              success: function(data) { 
-              },
-              error: function(error) { alert('boo!'); }
-            }
-            
             /*
               $.ajax({
               crossOrigin: true,
@@ -505,7 +495,19 @@
               });
             */
           }
+          function sendSinchMessage() {
+            //alert("Into send sinch");
+            var sinchUrl = "http://sinchsms-43618.onmodulus.net/?tophone=+14046109974&smstext=Ash, How do you like this for $34.99? http://thisdress.macys.com";          
+            $.ajax({
+              url: sinchUrl,
+              crossOrigin: true,
+              type: 'GET',
+              success: function(data) { var a=10; },
+              error: function(error) { var b=20; }
+            });
+          }
+          
         </script>
         
       </body>
-    </html>                                        
+    </html>                                                      
