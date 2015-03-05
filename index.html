@@ -221,7 +221,7 @@
               </tr>
               <tr>
                 <td colspan="2" align="center">
-                  <a data-role="button" data-theme="b" href="index.html" id="payCoinbase" onClick="alert('Thanks for paying with Coinbase');">Pay with Coinbase</a>
+                  <a data-role="button" data-theme="b" href="index.html" id="payCoinbase" onClick="alert('Thanks for paying with Coinbase');">Pay</a>
                   <div align="center"><img src="./images/CoinbaseLogo.png" alt="coinbase"/></div>
                 </td>
               </tr>
@@ -428,72 +428,72 @@
             var restUrl = 'http://origin-api.macys.com/v4/catalog/product/' + productId + '(productdetails(price,summary,availability),promotions,reviews)?retrieveallupcs=true';
             var timeNow = new Date();
             var plus30min = new Date(timeNow.getTime() + 30*60000);
+            var amPM = ' AM';
+            var hh = plus30min.getHours()%12;
+            if (plus30min.getHours() >= 12) amPM = ' PM';
+            if (hh == 0) hh = '12';
+            $('#EndTime').html(hh + ':' + plus30min.getMinutes() + amPM );
             
-            $.ajax({
-              url: restUrl,
-              type: 'GET',
-              //crossOrigin: true,
-              success: function(data) {
-                var amPM = ' AM';
-                var hh = plus30min.getHours()%12;
-                jsonCurrentProduct = data;
-                
-                $('#productName').html(jsonCurrentProduct.product[0].productDetails.summary.name);
-                $('#productName2').html(jsonCurrentProduct.product[0].productDetails.summary.name);
-                //alert(data.product[0].productDetails.summary.name);
-                $('#regularPrice').html(jsonCurrentProduct.product[0].productDetails.price.original.pricevalue.low);
-                $('#salePrice').html(jsonCurrentProduct.product[0].productDetails.price.retail.pricevalue.low);
-                $('#liquidPrice').html(currentItemLiquidPrice);
-                $('#liquidPrice2').html(currentItemLiquidPrice);
-                $('#reviewCount').html(jsonCurrentProduct.product[0].Reviews.totalReviewCount);
-                $('#shipping').html((currentItemLiquidPrice*0.05).toPrecision(3));
-                $('#tax').html((currentItemLiquidPrice*0.086).toPrecision(3));
-                $('#order_total').html((currentItemLiquidPrice*1.136).toPrecision(4));
-                
-                if (plus30min.getHours() >= 12) amPM = ' PM';
-                if (hh == 0) hh = '12';
-                $('#EndTime').html(hh + ':' + plus30min.getMinutes() + amPM );
-              },
-              error: function(error) { alert('boo!'); },
-              beforeSend: setHeader
-            });
+            var Launch2015 = false;
             
-            restUrl = 'http://origin-api.macys.com/v3/catalog/product/' + productId + '?show=image';          
-            $.ajax({
-              url: restUrl,
-              type: 'GET',
-              success: function(data) { 
-                //alert(data.product[0].image[0].imageurl);   
-                //$('#imageItem').attr("src", data.product[0].image[0].imageurl);
-                // Hard code to better resolution for demo
-                $('#imageItem').attr("src", "http://slimages.macys.com/is/image/MCY/products/1/optimized/2169111_fpx.tif?wid=600&hei=510&fit=fit,1&$filterxlrg$");
-              },
-              error: function(error) { alert('boo!'); },
-              beforeSend: setHeader
-            });
-            function setHeader(xhr) {
-              xhr.setRequestHeader('X-Macys-Webservice-Client-Id', 'Launch2015');
-              xhr.setRequestHeader('Accept', 'application/json');
-            }    
-            
-            /*
+            if (Launch2015) {
               $.ajax({
-              crossOrigin: true,
-              type: 'GET',
-              url: 'http://api.macys.com/v3/catalog/product?upc=' + upcItem ,
-              beforeSend : function(xhr) {
-              xhr.setRequestHeader("X-Macys-Webservice-Client-Id", "Launch2015");
-              xhr.setRequestHeader("Accept", "application/json");
-              },
-              cache: false,
-              success: function(data) {           
-              alert(JSON.stringify(data));                            
-              },
-              error: function(){
-              alert('Could not fetch data!');
-              }
+                url: restUrl,
+                type: 'GET',
+                //crossOrigin: true,
+                success: function(data) {
+                  jsonCurrentProduct = data;
+                  
+                  $('#productName').html(jsonCurrentProduct.product[0].productDetails.summary.name);
+                  $('#productName2').html(jsonCurrentProduct.product[0].productDetails.summary.name);
+                  //alert(data.product[0].productDetails.summary.name);
+                  $('#regularPrice').html(jsonCurrentProduct.product[0].productDetails.price.original.pricevalue.low);
+                  $('#salePrice').html(jsonCurrentProduct.product[0].productDetails.price.retail.pricevalue.low);
+                  $('#liquidPrice').html(currentItemLiquidPrice);
+                  $('#liquidPrice2').html(currentItemLiquidPrice);
+                  $('#reviewCount').html(jsonCurrentProduct.product[0].Reviews.totalReviewCount);
+                  $('#shipping').html((currentItemLiquidPrice*0.05).toPrecision(3));
+                  $('#tax').html((currentItemLiquidPrice*0.086).toPrecision(3));
+                  $('#order_total').html((currentItemLiquidPrice*1.136).toPrecision(4));
+                  
+                },
+                error: function(error) { alert('boo!'); },
+                beforeSend: setHeader
               });
-            */
+              
+              restUrl = 'http://origin-api.macys.com/v3/catalog/product/' + productId + '?show=image';          
+              $.ajax({
+                url: restUrl,
+                type: 'GET',
+                success: function(data) { 
+                  //alert(data.product[0].image[0].imageurl);   
+                  //$('#imageItem').attr("src", data.product[0].image[0].imageurl);
+                  // Hard code to better resolution for demo
+                  $('#imageItem').attr("src", "http://slimages.macys.com/is/image/MCY/products/1/optimized/2169111_fpx.tif?wid=600&hei=510&fit=fit,1&$filterxlrg$");
+                },
+                error: function(error) { alert('boo!'); },
+                beforeSend: setHeader
+              });
+              function setHeader(xhr) {
+                xhr.setRequestHeader('X-Macys-Webservice-Client-Id', 'Launch2015');
+                xhr.setRequestHeader('Accept', 'application/json');
+              }    
+            }
+            else
+            {
+              $('#imageItem').attr("src", "http://slimages.macys.com/is/image/MCY/products/1/optimized/2169111_fpx.tif?wid=600&hei=510&fit=fit,1&$filterxlrg$");
+              $('#productName').html('Free People Peek-A-Boo Cap-Sleeve Lace Dress');
+              $('#productName2').html('Free People Peek-A-Boo Cap-Sleeve Lace Dress');
+              //alert(data.product[0].productDetails.summary.name);
+              $('#regularPrice').html('98.00');
+              $('#salePrice').html('57.99');
+              $('#liquidPrice').html(currentItemLiquidPrice);
+              $('#liquidPrice2').html(currentItemLiquidPrice);
+              $('#reviewCount').html('22');
+              $('#shipping').html((currentItemLiquidPrice*0.05).toPrecision(3));
+              $('#tax').html((currentItemLiquidPrice*0.086).toPrecision(3));
+              $('#order_total').html((currentItemLiquidPrice*1.136).toPrecision(4));
+            }
           }
           function sendSinchMessage() {
             //alert("Into send sinch");
@@ -510,4 +510,4 @@
         </script>
         
       </body>
-    </html>                                                      
+    </html>                                                          
